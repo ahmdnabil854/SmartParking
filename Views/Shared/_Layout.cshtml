@@ -1,0 +1,125 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SmartParking</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/SmartParking.styles.css" asp-append-version="true" />
+    <style>
+        .smart-nav {
+        background: #1a1a2e;
+        padding: 12px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        }
+
+        .smart-nav .brand {
+        color: #e8f5a3;
+        font-size: 16px;
+        font-weight: 600;
+        text-decoration: none;
+        font-family: 'Inter', sans-serif;
+        }
+
+        .smart-nav .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        }
+
+        .smart-nav .nav-links a {
+        color: #9FE1CB;
+        text-decoration: none;
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        transition: color 0.2s;
+        }
+
+        .smart-nav .nav-links a:hover {
+        color: #e8f5a3;
+        }
+
+        .smart-nav .user-name {
+        color: #e8f5a3;
+        font-size: 14px;
+        font-family: 'Inter', sans-serif;
+        }
+
+        .smart-nav .logout-btn {
+        background: transparent;
+        border: 1.5px solid #9FE1CB;
+        color: #9FE1CB;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 13px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s;
+        }
+
+        .smart-nav .logout-btn:hover {
+        background: #9FE1CB;
+        color: #1a1a2e;
+        }
+
+        .login-btn {
+        background: #e8f5a3;
+        color: #1a1a2e !important;
+        padding: 6px 16px;
+        border-radius: 8px;
+        font-weight: 600 !important;
+        }
+
+        .login-btn:hover {
+        background: #d4e88a !important;
+        color: #1a1a2e !important;
+        }
+    </style>
+</head>
+
+<body style="background: #f5f3ee;">
+    <header>
+        <nav class="smart-nav">
+            <a class="brand" asp-controller="Parking" asp-action="Index">
+                🅿 SmartParking
+            </a>
+            <div class="nav-links">
+                <a asp-controller="Parking" asp-action="Index">Parking</a>
+                @if (Context.Session.GetString("UserName") != null)
+                {
+                    <a asp-controller="Booking" asp-action="MyBookings">My Bookings</a>
+                    <a asp-controller="Account" asp-action="Settings"
+                       style="color:#9FE1CB; text-decoration:none; font-size:14px;">👋
+                        @Context.Session.GetString("UserName")</a>
+                        <a class="logout-btn" asp-controller="Account" asp-action="Logout">Logout</a>
+                    }
+                else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="login-btn">Login</a>
+                        <a asp-controller="Admin" asp-action="Login"
+                           style="color:#9FE1CB; text-decoration:none; font-size:13px; border: 1px solid #2a2a3e; padding: 6px 12px; border-radius:8px;">Admin</a>
+                    }
+                </div>
+            </nav>
+        </header>
+
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+
+        <footer style="text-align:center; padding: 20px; color: #888; font-size: 13px; font-family: 'Inter', sans-serif;">
+            © 2026 SmartParking
+        </footer>
+
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        @await RenderSectionAsync("Scripts", required: false)
+    </body>
+
+</html>

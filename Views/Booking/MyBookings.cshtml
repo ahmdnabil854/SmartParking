@@ -1,0 +1,142 @@
+@using SmartParking.Models
+@model IEnumerable<Booking>
+
+@{
+    ViewData["Title"] = "My Bookings";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .page-wrapper { max-width: 800px; margin: 30px auto; }
+    .page-header { margin-bottom: 24px; }
+    .page-header h1 { font-size: 22px; font-weight: 600; color: #1a1a2e; }
+    .page-header p { font-size: 14px; color: #888; margin-top: 4px; }
+
+    .booking-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 14px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        border: 1.5px solid #f0f0f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+    }
+    .booking-left { display: flex; align-items: center; gap: 16px; }
+    .slot-badge {
+        width: 52px; height: 52px;
+        background: #1a1a2e;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        color: #e8f5a3;
+        font-size: 16px; font-weight: 700;
+    }
+    .booking-info h3 { font-size: 15px; font-weight: 600; color: #1a1a2e; margin: 0 0 4px; }
+    .booking-info p { font-size: 13px; color: #888; margin: 0; }
+    .booking-info .duration { font-size: 12px; color: #1D9E75; font-weight: 500; margin-top: 4px; }
+
+    .booking-right { display: flex; align-items: center; gap: 12px; }
+    .status-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .status-badge.active { background: #e8f5e9; color: #1D9E75; }
+    .status-badge.cancelled { background: #fff0ee; color: #D85A30; }
+    .status-badge.completed { background: #f0f4ff; color: #5469d4; }
+
+    .cancel-btn {
+        background: transparent;
+        border: 1.5px solid #D85A30;
+        color: #D85A30;
+        padding: 7px 16px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+    .cancel-btn:hover { background: #D85A30; color: #fff; }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+    .empty-state h3 { font-size: 18px; font-weight: 600; color: #1a1a2e; }
+    .empty-state p { font-size: 14px; color: #888; margin-top: 8px; }
+    .empty-state a {
+        display: inline-block;
+        margin-top: 20px;
+        background: #1a1a2e;
+        color: #e8f5a3;
+        padding: 12px 28px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+    }
+    .price-tag { font-size: 16px; font-weight: 600; color: #1a1a2e; min-width: 80px; text-align: right; }
+</style>
+
+<div class="page-wrapper">
+    <div class="page-header">
+        <h1>My Bookings</h1>
+        <p>@Model.Count() booking(s) total</p>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <div class="icon">🅿️</div>
+            <h3>No bookings yet</h3>
+            <p>You haven't booked any parking spots yet.</p>
+            <a href="/Parking">Find a Spot</a>
+        </div>
+    }
+    else
+    {
+        @foreach (var booking in Model)
+        {
+            <div class="booking-card">
+                <div class="booking-left">
+                    <div class="slot-badge">@booking.Slot?.SlotNumber</div>
+                    <div class="booking-info">
+                        <h3>@booking.Slot?.ParkingLot?.Name</h3>
+                        <p>📅 @booking.StartTime.ToString("dd MMM yyyy, HH:mm") → @booking.EndTime.ToString("dd MMM yyyy, HH:mm")</p>
+                        <div class="duration">
+                            @{
+                                var diff = booking.EndTime - booking.StartTime;
+                                if (diff.TotalDays >= 28)
+                                    { <text>🗓 1 month</text> }
+                                else if (diff.TotalHours >= 24)
+                                    { <text>📅 @((int)diff.TotalDays) day(s)</text> }
+                                else
+                                    { <text>⏱ @((int)diff.TotalHours) hour(s)</text> }
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="booking-right">
+                    <span class="status-badge @booking.Status.ToLower()">@booking.Status</span>
+                    @if (booking.Status == "Active")
+                    {
+                        <form method="post" asp-action="Cancel" asp-controller="Booking">
+                            <input type="hidden" name="bookingId" value="@booking.BookingId" />
+                            <button type="submit" class="cancel-btn">Cancel</button>
+                        </form>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
