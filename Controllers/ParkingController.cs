@@ -16,6 +16,9 @@ public class ParkingController : Controller
 
     public async Task<IActionResult> Index()
     {
+        if (HttpContext.Session.GetInt32("UserId") == null)
+            return RedirectToAction("Login", "Account");
+
         var slots = await _context.Slots
             .Include(s => s.ParkingLot)
             .ToListAsync();
@@ -25,6 +28,9 @@ public class ParkingController : Controller
     [HttpPost]
     public async Task<IActionResult> Book(int slotId, DateTime startTime, DateTime endTime)
     {
+        if (HttpContext.Session.GetInt32("UserId") == null)
+            return RedirectToAction("Login", "Account");
+
         var slot = await _context.Slots.FindAsync(slotId);
         if (slot == null || slot.Status != "Available")
             return BadRequest("المكان مش متاح");
