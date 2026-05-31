@@ -25,21 +25,17 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// On Railway, HTTPS is already handled by Railway.
-// This can cause warnings, so you can disable it in production.
+// Railway handles HTTPS.
 // app.UseHttpsRedirection();
 
+app.UseStaticFiles();
 app.UseRouting();
 
 app.UseSession();
-
 app.UseAuthorization();
-
-app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Account}/{action=Login}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=Account}/{action=Login}/{id?}");
 
 app.Run();
